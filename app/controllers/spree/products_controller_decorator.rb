@@ -9,7 +9,6 @@ module Spree
     def force_razorpay_view_priority
       plugin_theme_path = SpreeRazorpayCheckout::Engine.root.join('app', 'views', 'themes', 'default')
       prepend_view_path(plugin_theme_path)
-
     end
   end
 end

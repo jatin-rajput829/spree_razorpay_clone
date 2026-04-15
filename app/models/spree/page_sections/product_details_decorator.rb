@@ -12,6 +12,4 @@ module Spree
     end
   end
   
-  Spree::PageSections::ProductDetails.prepend(
-    Spree::PageSections::ProductDetailsDecorator
-  )
+Spree::PageSections::ProductDetailsDecorator.prepend(Spree::PageSections::ProductDetailsDecorator)

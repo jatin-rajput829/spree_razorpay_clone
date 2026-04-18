@@ -1,12 +1,11 @@
 PATH
   remote: .
   specs:
-    spree_razorpay_checkout (0.0.2)
-      razorpay
-      spree (>= 5.0.0)
-      spree_backend
+    spree_razorpay_checkout (0.2.5)
+      activemerchant
+      razorpay (~> 3.2)
+      spree_core (>= 5.2)
       spree_extension
-      spree_frontend
 
 GEM
   remote: https://rubygems.org/
@@ -101,11 +100,12 @@ GEM
       activesupport (>= 6.1)
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
-    any_ascii (0.3.3)
+    alba (3.10.0)
     appraisal (2.5.0)
       bundler
       rake
       thor (>= 0.14.0)
+    ar_lazy_preload (2.1.1)
     ast (2.4.3)
     async (2.25.0)
       console (~> 1.29)
@@ -128,30 +128,17 @@ GEM
       faraday
     async-pool (0.10.3)
       async (>= 1.25)
-    auto_strip_attributes (2.6.0)
-      activerecord (>= 4.0)
-    autoprefixer-rails (10.4.21.0)
-      execjs (~> 2)
     awesome_nested_set (3.8.0)
       activerecord (>= 4.0.0, < 8.1)
     awesome_print (1.9.2)
-    babel-source (5.8.35)
-    babel-transpiler (0.7.0)
-      babel-source (>= 4.0, < 6)
-      execjs (~> 2.0)
     base64 (0.3.0)
     bcrypt (3.1.20)
     benchmark (0.4.1)
     bigdecimal (3.2.2)
-    bootstrap (4.6.2.1)
-      autoprefixer-rails (>= 9.1.0)
-      popper_js (>= 1.16.1, < 2)
     brakeman (7.1.0)
       racc
     builder (3.3.0)
     cancancan (3.6.1)
-    canonical-rails (0.2.17)
-      actionview (>= 4.1, < 8.1)
     capybara (3.40.0)
       addressable
       matrix
@@ -189,13 +176,10 @@ GEM
     date (3.4.1)
     diff-lcs (1.6.2)
     docile (1.4.1)
-    doorkeeper (5.8.2)
-      railties (>= 5)
     dotenv (3.1.8)
     drb (2.2.3)
     erb (5.0.2)
     erubi (1.13.1)
-    execjs (2.10.0)
     factory_bot (6.5.4)
       activesupport (>= 6.1.0)
     faraday (2.13.4)
@@ -212,9 +196,6 @@ GEM
     fiber-local (1.1.0)
       fiber-storage
     fiber-storage (1.0.1)
-    flag-icons-rails (3.4.6.1)
-      sass-rails
-    flatpickr (4.6.13.1)
     friendly_id (5.4.2)
       activerecord (>= 4.0.0)
     friendly_id-mobility (1.0.4)
@@ -235,7 +216,6 @@ GEM
       rake (>= 10.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    glyphicons (1.0.2)
     highline (3.1.2)
       reline
     httparty (0.23.1)
@@ -258,13 +238,6 @@ GEM
     image_processing (1.14.0)
       mini_magick (>= 4.9.5, < 6)
       ruby-vips (>= 2.0.17, < 3)
-    importmap-rails (2.2.2)
-      actionpack (>= 6.0.0)
-      activesupport (>= 6.0.0)
-      railties (>= 6.0.0)
-    inline_svg (1.10.0)
-      activesupport (>= 3.0)
-      nokogiri (>= 1.6)
     io-console (0.8.1)
     io-endpoint (0.15.2)
     io-event (1.11.2)
@@ -273,32 +246,12 @@ GEM
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    jquery-rails (4.6.0)
-      rails-dom-testing (>= 1, < 3)
-      railties (>= 4.2.0)
-      thor (>= 0.14, < 2.0)
-    jquery-ui-rails (7.0.0)
-      railties (>= 3.2.16)
-    jsbundling-rails (1.3.1)
-      railties (>= 6.0.0)
     json (2.13.2)
     jsonapi-rspec (0.0.11)
       rspec-core
       rspec-expectations
-    jsonapi-serializer (2.2.0)
-      activesupport (>= 4.2)
-    kaminari (1.2.2)
-      activesupport (>= 4.1.0)
-      kaminari-actionview (= 1.2.2)
-      kaminari-activerecord (= 1.2.2)
-      kaminari-core (= 1.2.2)
-    kaminari-actionview (1.2.2)
-      actionview
-      kaminari-core (= 1.2.2)
-    kaminari-activerecord (1.2.2)
-      activerecord
-      kaminari-core (= 1.2.2)
-    kaminari-core (1.2.2)
+    jwt (3.1.2)
+      base64
     language_server-protocol (3.17.0.5)
     launchy (3.1.1)
       addressable (~> 2.8)
@@ -357,6 +310,14 @@ GEM
     octokit (4.25.1)
       faraday (>= 1, < 3)
       sawyer (~> 0.9)
+    oj (3.16.17)
+      bigdecimal (>= 3.0)
+      ostruct (>= 0.2)
+    ostruct (0.6.3)
+    pagy (43.4.4)
+      json
+      uri
+      yaml
     parallel (1.27.0)
     paranoia (3.0.1)
       activerecord (>= 6, < 8.1)
@@ -364,7 +325,6 @@ GEM
       ast (~> 2.4.1)
       racc
     phonelib (0.10.11)
-    popper_js (1.16.1)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -446,11 +406,6 @@ GEM
       io-console (~> 0.5)
     request_store (1.7.0)
       rack (>= 1.4)
-    requestjs-rails (0.0.13)
-      railties (>= 7.1.0)
-    responders (3.1.1)
-      actionpack (>= 5.2)
-      railties (>= 5.2)
     rexml (3.4.1)
     rspec-activemodel-mocks (1.2.1)
       activemodel (>= 3.0)
@@ -497,7 +452,6 @@ GEM
       rack (>= 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.44.0, < 2.0)
-    ruby-oembed (0.18.1)
     ruby-progressbar (1.13.0)
     ruby-vips (2.2.4)
       ffi (~> 1.12)
@@ -518,7 +472,6 @@ GEM
       addressable (>= 2.3.5)
       faraday (>= 0.17.3, < 3)
     securerandom (0.4.1)
-    select2-rails (4.0.13)
     selenium-webdriver (4.10.0)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
@@ -529,44 +482,23 @@ GEM
       simplecov_json_formatter (~> 0.1)
     simplecov-html (0.13.2)
     simplecov_json_formatter (0.1.4)
-    spree (5.1.4)
-      spree_api (= 5.1.4)
-      spree_cli (= 5.1.4)
-      spree_core (= 5.1.4)
-    spree_api (5.1.4)
-      bcrypt (~> 3.1)
-      doorkeeper (~> 5.3)
-      jsonapi-serializer (~> 2.1)
-      spree_core (= 5.1.4)
-    spree_backend (4.8.4)
-      babel-transpiler (~> 0.7)
-      bootstrap (~> 4.0)
-      flag-icons-rails (~> 3.4)
-      flatpickr (~> 4.6)
-      glyphicons (~> 1.0)
-      importmap-rails
-      inline_svg (~> 1.5)
-      jquery-rails (~> 4.3)
-      jquery-ui-rails (>= 6, < 8)
-      requestjs-rails
-      responders
-      sass-rails (>= 5)
-      select2-rails (~> 4.0.6)
-      spree (>= 4.7.0)
-      sprockets (~> 4.0)
-      stimulus-rails
-      tinymce-rails (~> 5.0)
-      turbo-rails
-    spree_cli (5.1.4)
-      thor (~> 1.0)
-    spree_core (5.1.4)
-      active_storage_validations (= 1.3.0)
-      activemerchant (~> 1.67)
+    spree (5.4.1)
+      spree_api (= 5.4.1)
+      spree_core (= 5.4.1)
+    spree_api (5.4.1)
+      alba (~> 3.0)
+      oj (~> 3.16)
+      pagy (~> 43.0)
+      spree_core (= 5.4.1)
+      typelizer (~> 0.11.0)
+    spree_core (5.4.1)
+      active_storage_validations (>= 1.3, < 4)
       acts-as-taggable-on
       acts_as_list (>= 0.8)
-      any_ascii (~> 0.3.2)
-      auto_strip_attributes (~> 2.6)
+      ar_lazy_preload (~> 2.0)
       awesome_nested_set (~> 3.3, >= 3.3.1)
+      bcrypt (~> 3.1)
+      benchmark
       cancancan (~> 3.2)
       carmen (>= 1.0)
       countries
@@ -575,23 +507,25 @@ GEM
       geocoder
       highline (>= 2, < 4)
       image_processing (~> 1.2)
-      kaminari (~> 1.2)
+      jwt (~> 3.1)
       mobility (~> 1.3, >= 1.3.2)
       mobility-actiontext (~> 1.1)
       mobility-ransack (~> 1.2)
       monetize (~> 1.9)
       money (~> 6.13)
       name_of_person (~> 1.1)
+      ostruct
+      pagy (~> 43.0)
       paranoia (>= 2.4)
       phonelib (~> 0.10)
-      rails (>= 7.2, < 8.1)
+      rails (>= 7.2, < 8.2)
       ransack (>= 4.1)
-      request_store (~> 1.7)
       rexml
-      ruby-oembed (~> 0.18)
-      safely_block (~> 0.4)
-      state_machines-activemodel (~> 0.10)
-      state_machines-activerecord (~> 0.10)
+      safely_block (>= 0.4, < 2.0)
+      sqids (~> 0.2)
+      ssrf_filter (~> 1.0)
+      state_machines-activemodel (~> 0.100)
+      state_machines-activerecord (~> 0.100)
       stringex
       tracking_number
       validates_zipcode
@@ -629,21 +563,6 @@ GEM
     spree_extension (0.1.0)
       activerecord (>= 4.2)
       spree_core
-    spree_frontend (4.7.0)
-      babel-transpiler (~> 0.7)
-      bootstrap (~> 4.0)
-      canonical-rails (~> 0.2, >= 0.2.10)
-      flag-icons-rails (~> 3.4)
-      glyphicons (~> 1.0)
-      inline_svg (~> 1.5)
-      jquery-rails (~> 4.3)
-      jsbundling-rails
-      responders
-      sass-rails (>= 5)
-      spree_api (>= 4.7.0)
-      spree_core (>= 4.7.0)
-      sprockets (~> 4.0)
-      turbo-rails
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
@@ -652,6 +571,8 @@ GEM
       actionpack (>= 6.1)
       activesupport (>= 6.1)
       sprockets (>= 3.0.0)
+    sqids (0.2.2)
+    ssrf_filter (1.5.0)
     state_machines (0.100.1)
     state_machines-activemodel (0.100.0)
       activemodel (>= 7.2)
@@ -659,8 +580,6 @@ GEM
     state_machines-activerecord (0.100.0)
       activerecord (>= 7.2)
       state_machines-activemodel (>= 0.100.0)
-    stimulus-rails (1.3.4)
-      railties (>= 6.0.0)
     stringex (2.8.6)
     stringio (3.1.7)
     terminal-table (4.0.0)
@@ -669,15 +588,13 @@ GEM
     tilt (2.6.1)
     timecop (0.9.10)
     timeout (0.4.3)
-    tinymce-rails (5.10.9)
-      railties (>= 3.1.1)
     traces (0.15.2)
     tracking_number (2.2.0)
       activesupport (>= 4.2.5)
       json (>= 1.8.3)
-    turbo-rails (2.0.16)
-      actionpack (>= 7.1.0)
-      railties (>= 7.1.0)
+    typelizer (0.11.0)
+      benchmark
+      railties (>= 6.0.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     unaccent (0.4.0)
@@ -700,6 +617,7 @@ GEM
     websocket-extensions (0.1.5)
     xpath (3.2.0)
       nokogiri (~> 1.8)
+    yaml (0.4.0)
     zeitwerk (2.7.3)
 
 PLATFORMS

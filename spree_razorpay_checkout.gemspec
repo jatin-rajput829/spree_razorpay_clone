@@ -39,6 +39,8 @@ Gem::Specification.new do |spec|
   
   spec.add_dependency 'spree_extension'
 
+  spec.add_dependency 'activemerchant'
+
   # Development dependencies
   spec.add_development_dependency 'spree_dev_tools'
 

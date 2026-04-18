@@ -157,7 +157,7 @@ module Spree
         rzp_payment = ::Razorpay::Payment.fetch(response_code)
         refund = rzp_payment.refund
 
-        ActiveMerchant::Billing::Response.new(
+        ::ActiveMerchant::Billing::Response.new(
           true, 
           'Razorpay Void/Refund Successful', 
           { refund_id: refund.id }, 
@@ -166,7 +166,7 @@ module Spree
         )
       rescue StandardError => e
         Rails.logger.error("Razorpay Void Failed: #{e.message}")
-        ActiveMerchant::Billing::Response.new(false, "Void failed: #{e.message}", {}, test: preferred_test_mode)
+        ::ActiveMerchant::Billing::Response.new(false, "Void failed: #{e.message}", {}, test: preferred_test_mode)
       end
     end
 

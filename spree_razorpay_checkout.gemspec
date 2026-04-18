@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.platform      = Gem::Platform::RUBY
   spec.summary       = 'Production-grade Razorpay integration for Spree Commerce 5.3+'
   spec.description   = 'Seamless Razorpay checkout integration for Spree 5.x. Features include Hotwire/Turbo compatibility, Zero Drop-off Webhook captures, native Spree Dashboard refunds, and the Affordability Widget.'
-  spec.required_ruby_version = '>= 3.1.3'
+  spec.required_ruby_version = '>= 3.1.2'
 
   # Author info
   spec.authors       = ['Umesh Ravani']

@@ -164,7 +164,7 @@ module Spree
           { refund_id: refund.id }, 
           test: preferred_test_mode,
           # KEEP ORIGINAL PAYMENT ID so state machine update the correct state using response_code
-          authorization: response_code
+          authorization: refund.id
         )
       rescue StandardError => e
         Rails.logger.error("Razorpay Void Failed: #{e.message}")

@@ -19,14 +19,18 @@ module SpreeRazorpayCheckout
                      end
 
           unless response.success?
-            Rails.logger.error(Spree.t(:gateway_error) + "  #{response.to_yaml}")
+            Rails.logger.error("===================")
+            Rails.logger.error("#{response.to_yaml}")
+            Rails.logger.error("===================")
             text = response.params['message'] || response.params['response_reason_text'] || response.message
             raise Core::GatewayError, text
           end
 
           response
         rescue ActiveMerchant::ConnectionError => e
-          Rails.logger.error(Spree.t(:gateway_error) + "  #{e.inspect}")
+          Rails.logger.error("===================")
+          Rails.logger.error("#{e.inspect}")
+          Rails.logger.error("===================")
           raise Core::GatewayError, Spree.t(:unable_to_connect_to_gateway)
         end
 

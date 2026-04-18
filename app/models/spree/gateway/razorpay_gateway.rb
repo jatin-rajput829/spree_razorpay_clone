@@ -86,7 +86,7 @@ module Spree
 
       begin
         if source.razorpay_payment_id.blank? || source.razorpay_signature.blank?
-           return ActiveMerchant::Billing::Response.new(false, 'Payment was not completed. Please try again.', {}, test: preferred_test_mode)
+           return ::ActiveMerchant::Billing::Response.new(false, 'Payment was not completed. Please try again.', {}, test: preferred_test_mode)
         end
 
         # 1. Verify the signature
@@ -104,7 +104,7 @@ module Spree
 
         source.update!(status: 'captured')
         
-        ActiveMerchant::Billing::Response.new(
+        ::ActiveMerchant::Billing::Response.new(
           true, 
           'Razorpay Payment Successful', 
           {}, 
@@ -114,13 +114,13 @@ module Spree
         
       rescue StandardError => e
         Rails.logger.error("Razorpay Verification/Capture Failed: #{e.message}")
-        ActiveMerchant::Billing::Response.new(false, 'Payment verification failed.', {}, test: preferred_test_mode)
+        ::ActiveMerchant::Billing::Response.new(false, 'Payment verification failed.', {}, test: preferred_test_mode)
       end
     end
 
     def capture(*args)
       # We already auto-capture via the frontend/webhook, so we return true to keep Spree happy
-      ActiveMerchant::Billing::Response.new(true, 'Already Captured', {}, test: preferred_test_mode)
+      ::ActiveMerchant::Billing::Response.new(true, 'Already Captured', {}, test: preferred_test_mode)
     end
 
     # Triggered when you click "Refund" in the Spree Admin
@@ -134,7 +134,7 @@ module Spree
         # Issue the refund via Razorpay API (amount must be in paise/cents)
         refund = rzp_payment.refund(amount: credit_cents)
 
-        ActiveMerchant::Billing::Response.new(
+        ::ActiveMerchant::Billing::Response.new(
           true, 
           'Razorpay Refund Successful', 
           { refund_id: refund.id }, 
@@ -143,7 +143,7 @@ module Spree
         )
       rescue StandardError => e
         Rails.logger.error("Razorpay Refund Failed: #{e.message}")
-        ActiveMerchant::Billing::Response.new(false, "Refund failed: #{e.message}", {}, test: preferred_test_mode)
+        ::ActiveMerchant::Billing::Response.new(false, "Refund failed: #{e.message}", {}, test: preferred_test_mode)
       end
     end
 

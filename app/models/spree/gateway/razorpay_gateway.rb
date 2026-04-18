@@ -2,7 +2,7 @@ require 'razorpay'
 require 'active_merchant'
 
 module Spree
-  class Gateway::RazorpayGateway < Spree::PaymentMethod
+  class Gateway::RazorpayGateway < Gateway
     preference :webhook_secret, :password, default: ''
     preference :key_id, :string, default: ''
     preference :key_secret, :password, default: ''
@@ -133,7 +133,7 @@ module Spree
         rzp_payment = ::Razorpay::Payment.fetch(response_code)
         
         # Issue the refund via Razorpay API (amount must be in paise/cents)
-        refund = rzp_payment.refund(amount: credit_cents)
+        refund = rzp_payment.refund({ amount: credit_cents })
 
         ::ActiveMerchant::Billing::Response.new(
           true, 
@@ -142,6 +142,8 @@ module Spree
           test: preferred_test_mode, 
           authorization: refund.id
         )
+
+        Rails.logger.info("========== refund - #{refund} ==========")
       rescue StandardError => e
         Rails.logger.error("Razorpay Refund Failed: #{e.message}")
         ::ActiveMerchant::Billing::Response.new(false, "Refund failed: #{e.message}", {}, test: preferred_test_mode)
@@ -164,8 +166,10 @@ module Spree
           { refund_id: refund.id }, 
           test: preferred_test_mode,
           # KEEP ORIGINAL PAYMENT ID so state machine update the correct state using response_code
-          authorization: refund.id
+          authorization: response_code
         )
+
+        Rails.logger.info("========== refund - #{refund} ==========")
       rescue StandardError => e
         Rails.logger.error("Razorpay Void Failed: #{e.message}")
         ::ActiveMerchant::Billing::Response.new(false, "Void failed: #{e.message}", {}, test: preferred_test_mode)

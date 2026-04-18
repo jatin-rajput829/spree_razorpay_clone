@@ -1,5 +1,5 @@
 module SpreeRazorpayCheckout
-  VERSION = '0.2.5'.freeze
+  VERSION = '2.0.0'.freeze
 
   module_function
 

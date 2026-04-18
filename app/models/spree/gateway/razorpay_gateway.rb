@@ -22,6 +22,12 @@ module Spree
       true
     end
 
+    def protect_from_error
+      yield
+    rescue ::Stripe::StripeError => e
+      raise ::Spree::Core::GatewayError, e.message
+    end
+
     def payment_source_class
       Spree::RazorpayCheckout
     end
@@ -79,7 +85,7 @@ module Spree
     end
 
     def can_void?(payment)
-      payment.state != 'void'
+      payment.completed? && payment.refunds.sum(:amount) < payment.amount
     end
 
     def purchase(_amount, source, _gateway_options = {})
@@ -124,62 +130,62 @@ module Spree
       ::ActiveMerchant::Billing::Response.new(true, 'Already Captured', {}, test: preferred_test_mode)
     end
 
+    def success(authorization, full_response)
+      Spree::PaymentResponse.new(true, nil, full_response.as_json, authorization: authorization)
+    end
+
+    def failure(error = nil)
+      Spree::PaymentResponse.new(false, error)
+    end
+
     # Triggered when you click "Refund" in the Spree Admin
-    def credit(credit_cents, response_code, _gateway_options = {})
-      provider
+    def credit(amount_in_cents, razorpay_payment_source, refund_record, _gateway_options = {})
+      protect_from_error do
+        provider
 
-      begin
-        # Fetch the original payment from Razorpay using the saved payment ID
-        rzp_payment = ::Razorpay::Payment.fetch(response_code)
-        
-        # Issue the refund via Razorpay API (amount must be in paise/cents)
-        refund = rzp_payment.refund({ amount: credit_cents })
-
-        Rails.logger.info("========== refund - #{refund.inspect} ==========")
-
-        ::ActiveMerchant::Billing::Response.new(
-          true, 
-          'Razorpay Refund Successful', 
-          { refund_id: refund.id }, 
-          test: preferred_test_mode, 
-          authorization: refund.id
-        )
-      rescue StandardError => e
-        Rails.logger.error("Razorpay Refund Failed: #{e.message}")
-        ::ActiveMerchant::Billing::Response.new(false, "Refund failed: #{e.message}", {}, test: preferred_test_mode)
+        response = process_refund(razorpay_payment_source, amount_in_cents)
+        success(response.id, response)
       end
     end
 
-    # Triggered if you explicitly "Void" a payment in Spree
-    def void(response_code, _gateway_options = {})
-      provider
+    def void(response_code, _source, _gateway_options)
+      return failure('Response code is blank') if response_code.blank?
 
-      begin
-        # Razorpay doesn't have a concept of "Voiding" a captured payment, 
-        # so we just issue a full refund instead.
-        rzp_payment = ::Razorpay::Payment.fetch(response_code)
-        refund = rzp_payment.refund
-
-        Rails.logger.info("========== refund - #{refund.inspect} ==========")
-
-        ::ActiveMerchant::Billing::Response.new(
-          true, 
-          'Razorpay Void/Refund Successful', 
-          { refund_id: refund.id }, 
-          test: preferred_test_mode,
-          # KEEP ORIGINAL PAYMENT ID so state machine update the correct state using response_code
-          authorization: response_code
-        )
-
-      rescue StandardError => e
-        Rails.logger.error("Razorpay Void Failed: #{e.message}")
-        ::ActiveMerchant::Billing::Response.new(false, "Void failed: #{e.message}", {}, test: preferred_test_mode)
-      end
+      cancel(response_code)
     end
+
 
     # Triggered if the entire Order is Cancelled in the Spree Admin
-    def cancel(response_code, source = nil, options = {})
-      void(response_code)
+    def cancel(razorpay_payment_source, payment = nil)
+      protect_from_error do
+        if payment&.completed?
+          amount = payment.credit_allowed
+          return success(razorpay_payment_source, {}) if amount.zero?
+           # Don't create a refund if the payment is for a shipment, we will create a refund for the whole shipping cost instead
+          return success(razorpay_payment_source, {}) if payment.respond_to?(:for_shipment?) && payment.for_shipment?
+
+          refund = payment.refunds.create!(
+            amount: amount,
+            reason: ::Spree::RefundReason.order_canceled_reason,
+            refunder_id: payment.order.canceler_id
+          )
+
+          # Spree::Refund#response has the response from the `credit` action
+          # For the authorization ID we need to use the payment.response_code (the payment intent ID)
+          # Otherwise we'll overwrite the payment authorization with the refund ID
+          success(payment.response_code, refund.response.params)
+        else
+          provider
+
+          response = process_refund(razorpay_payment_source)
+          success(refund.id, refund)
+        end
+      end
+    end
+
+    def process_refund(razorpay_payment_source, amount_in_cents = nil)
+      rzp_payment = ::Razorpay::Payment.fetch(razorpay_payment_source)
+      amount_in_cents.present? ? rzp_payment.refund({ amount: amount_in_cents }) : rzp_payment.refund
     end
   end
 end

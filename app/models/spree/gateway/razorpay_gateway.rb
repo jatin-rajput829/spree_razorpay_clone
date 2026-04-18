@@ -135,6 +135,8 @@ module Spree
         # Issue the refund via Razorpay API (amount must be in paise/cents)
         refund = rzp_payment.refund({ amount: credit_cents })
 
+        Rails.logger.info("========== refund - #{refund.inspect} ==========")
+
         ::ActiveMerchant::Billing::Response.new(
           true, 
           'Razorpay Refund Successful', 
@@ -142,8 +144,6 @@ module Spree
           test: preferred_test_mode, 
           authorization: refund.id
         )
-
-        Rails.logger.info("========== refund - #{refund} ==========")
       rescue StandardError => e
         Rails.logger.error("Razorpay Refund Failed: #{e.message}")
         ::ActiveMerchant::Billing::Response.new(false, "Refund failed: #{e.message}", {}, test: preferred_test_mode)
@@ -160,6 +160,8 @@ module Spree
         rzp_payment = ::Razorpay::Payment.fetch(response_code)
         refund = rzp_payment.refund
 
+        Rails.logger.info("========== refund - #{refund.inspect} ==========")
+
         ::ActiveMerchant::Billing::Response.new(
           true, 
           'Razorpay Void/Refund Successful', 
@@ -169,7 +171,6 @@ module Spree
           authorization: response_code
         )
 
-        Rails.logger.info("========== refund - #{refund} ==========")
       rescue StandardError => e
         Rails.logger.error("Razorpay Void Failed: #{e.message}")
         ::ActiveMerchant::Billing::Response.new(false, "Void failed: #{e.message}", {}, test: preferred_test_mode)

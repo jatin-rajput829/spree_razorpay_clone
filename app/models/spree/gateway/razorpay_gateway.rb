@@ -1,7 +1,7 @@
 require 'razorpay'
 
 module Spree
-  class Gateway::RazorpayGateway < Gateway
+  class Gateway::RazorpayGateway < Spree::PaymentMethod
     preference :webhook_secret, :password, default: ''
     preference :key_id, :string, default: ''
     preference :key_secret, :password, default: ''
@@ -171,7 +171,7 @@ module Spree
     end
 
     # Triggered if the entire Order is Cancelled in the Spree Admin
-    def cancel(response_code)
+    def cancel(response_code, source = nil, options = {})
       void(response_code)
     end
   end
